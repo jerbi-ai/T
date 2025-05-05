@@ -27,7 +27,7 @@ def auto_refreshing_reader(file_path, refresh_interval=2):
                 content = f.read()
             
             # Affichage avec style
-            last_update.markdown(f"Dernière mise à jour : {datetime.now().strftime('%H:%M:%S')}")
+            last_update.markdown(f"Monji chmissi : {datetime.now().strftime('%H:%M:%S')}")
             content_display.markdown(f'<div class="file-display">{content}</div>', 
                                    unsafe_allow_html=True)
         
