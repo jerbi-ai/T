@@ -1,30 +1,40 @@
 import streamlit as st
+import time
+from datetime import datetime
 
-# Titre de l'application
-st.title("🖥️ Monji Première App Streamlit")
+st.set_page_config(layout="wide")
 
-# 1. Lire le fichier texte
-try:
-    with open("mon_fichier.txt", "r", encoding="utf-8") as file:
-        contenu_fichier = file.read()
-except FileNotFoundError:
-    contenu_fichier = "⚠️ Fichier non trouvé (créez un fichier 'mon_fichier.txt' dans le même dossier)"
+# Style CSS personnalisé
+st.markdown("""
+<style>
+.file-display {
+    background-color: #f0f2f6;
+    border-radius: 10px;
+    padding: 15px;
+    font-family: monospace;
+}
+</style>
+""", unsafe_allow_html=True)
 
-# 2. Afficher le contenu du fichier dans une boîte dédiée
-st.subheader("Contenu du fichier texte :")
-st.text_area("", contenu_fichier, height=200)
+# Lecture auto-rafraîchie
+def auto_refreshing_reader(file_path, refresh_interval=2):
+    last_update = st.empty()
+    content_display = st.empty()
+    
+    while True:
+        try:
+            with open(file_path) as f:
+                content = f.read()
+            
+            # Affichage avec style
+            last_update.markdown(f"Dernière mise à jour : {datetime.now().strftime('%H:%M:%S')}")
+            content_display.markdown(f'<div class="file-display">{content}</div>', 
+                                   unsafe_allow_html=True)
+        
+        except FileNotFoundError:
+            content_display.error("Fichier non trouvé")
+        
+        time.sleep(refresh_interval)
 
-# Saisie utilisateur
-nom = st.text_input("Comment tu t'appelles ?")
-age = st.slider("Quel âge as-tu ?", 0, 100)
-
-# Bouton de validation
-if st.button("Valider"):
-    if nom:
-        st.success(f"Salut {nom} ! Tu as {age} ans 🎉")
-    else:
-        st.warning("⚠️ Oublie pas de rentrer ton nom !")
-
-# Bonus : Case à cocher
-if st.checkbox("Afficher un message secret"):
-    st.write("🔐 Le code secret est : **1234**")
+# Lancement
+auto_refreshing_reader("mon_fichier.txt")
