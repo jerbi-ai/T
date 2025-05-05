@@ -1,7 +1,7 @@
 import streamlit as st
 
 # Titre de l'application
-st.title("🖥️ Monji Première App Streamlit")
+st.title("🖥️ Chmissi Première App Streamlit")
 
 # Saisie utilisateur
 nom = st.text_input("Comment tu t'appelles ?")
