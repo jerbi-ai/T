@@ -1,40 +1,75 @@
 import streamlit as st
+import pandas as pd
 import time
 from datetime import datetime
 
+# Configuration de la page
 st.set_page_config(layout="wide")
+st.title("📋 Tableau de Lecture de Fichier Texte")
 
 # Style CSS personnalisé
 st.markdown("""
 <style>
-.file-display {
-    background-color: #f0f2f6;
-    border-radius: 10px;
-    padding: 15px;
-    font-family: monospace;
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+th, td {
+    border: 1px solid #dddddd;
+    text-align: left;
+    padding: 8px;
+}
+tr:nth-child(even) {
+    background-color: #f2f2f2;
+}
+.file-info {
+    color: #666;
+    font-size: 0.9em;
+    margin-bottom: 10px;
 }
 </style>
 """, unsafe_allow_html=True)
 
-# Lecture auto-rafraîchie
-def auto_refreshing_reader(file_path, refresh_interval=2):
-    last_update = st.empty()
-    content_display = st.empty()
+def read_file_to_table(file_path):
+    """Lit un fichier texte et retourne un DataFrame avec chaque ligne dans une cellule"""
+    try:
+        with open(file_path, 'r', encoding='utf-8') as f:
+            lines = [line.strip() for line in f.readlines() if line.strip()]
+        
+        # Création du DataFrame
+        df = pd.DataFrame({
+            "Ligne": range(1, len(lines)+1,
+            "Contenu": lines
+        })
+        return df, len(lines)
     
-    while True:
-        try:
-            with open(file_path) as f:
-                content = f.read()
-            
-            # Affichage avec style
-            last_update.markdown(f"Monji chmissi : {datetime.now().strftime('%H:%M:%S')}")
-            content_display.markdown(f'<div class="file-display">{content}</div>', 
-                                   unsafe_allow_html=True)
-        
-        except FileNotFoundError:
-            content_display.error("Fichier non trouvé")
-        
-        time.sleep(refresh_interval)
+    except FileNotFoundError:
+        return None, 0
 
-# Lancement
-auto_refreshing_reader("mon_fichier.txt")
+# Interface utilisateur
+file_path = "mon_fichier.txt"
+refresh_interval = st.slider("Intervalle de rafraîchissement (secondes)", 1, 10, 2)
+
+placeholder = st.empty()
+
+while True:
+    # Lecture du fichier
+    df, line_count = read_file_to_table(file_path)
+    
+    with placeholder.container():
+        # Affichage des métadonnées
+        st.markdown(f"""
+        <div class="file-info">
+            Dernière mise à jour: {datetime.now().strftime('%H:%M:%S')} | 
+            Fichier: {file_path} | 
+            Lignes: {line_count}
+        </div>
+        """, unsafe_allow_html=True)
+        
+        # Affichage du tableau
+        if df is not None:
+            st.table(df)
+        else:
+            st.error(f"Fichier {file_path} non trouvé")
+    
+    time.sleep(refresh_interval)
