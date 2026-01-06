@@ -1,21 +1,37 @@
 # fichier : app.py
 import streamlit as st
-import matplotlib.pyplot as plt
+import plotly.graph_objects as go
 
-# Titre de l'application
-st.title("Diagramme Circulaire de Pourcentage")
+st.title("Cercle de Pourcentage Professionnel")
 
-# Saisie du pourcentage par l'utilisateur
-pourcentage = st.slider("Choisissez un pourcentage :", 0, 100, 50)
+# Choix du pourcentage
+pourcentage = st.slider("Sélectionnez un pourcentage :", 0, 100, 65)
 
-# Données pour le diagramme
-valeurs = [pourcentage, 100 - pourcentage]
-labels = [f"{pourcentage}%", ""]
+# Création du graphique type "gauge"
+fig = go.Figure(go.Indicator(
+    mode="gauge+number",
+    value=pourcentage,
+    number={'suffix': "%", 'font': {'size': 36}},
+    gauge={
+        'axis': {'range': [0, 100], 'tickwidth': 2, 'tickcolor': "darkblue"},
+        'bar': {'color': "skyblue", 'thickness': 0.3},
+        'bgcolor': "lightgray",
+        'borderwidth': 2,
+        'bordercolor': "gray",
+        'steps': [
+            {'range': [0, 50], 'color': 'lightcoral'},
+            {'range': [50, 75], 'color': 'gold'},
+            {'range': [75, 100], 'color': 'lightgreen'}
+        ],
+        'threshold': {
+            'line': {'color': "red", 'width': 4},
+            'thickness': 0.75,
+            'value': pourcentage
+        }
+    }
+))
 
-# Création du diagramme circulaire
-fig, ax = plt.subplots()
-ax.pie(valeurs, labels=labels, colors=['skyblue', 'lightgray'], startangle=90, counterclock=False, wedgeprops={'width':0.3})
-ax.set(aspect="equal")  # Cercle parfait
+fig.update_layout(height=400)
 
 # Affichage dans Streamlit
-st.pyplot(fig)
+st.plotly_chart(fig)
