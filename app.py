@@ -1,35 +1,25 @@
 # fichier : app.py
 import streamlit as st
-import plotly.graph_objects as go
-from PIL import Image
+import cv2
 
-# Titre
-st.title("Cercle de Pourcentage avec Image")
+st.title("Live Camera avec Streamlit")
 
-# Charger une image
-image = Image.open("OneTech.jpg")  # Remplace par le nom de ton fichier
-st.image(image, caption="Voici mon image", use_column_width=True)
+# Accès à la caméra
+run = st.checkbox('Activer la caméra')
 
-# Slider pour le pourcentage
-pourcentage = st.slider("Sélectionnez un pourcentage :", 0, 100, 65)
+# Zone où afficher la vidéo
+FRAME_WINDOW = st.image([])
 
-# Cercle de pourcentage professionnel avec Plotly
-fig = go.Figure(go.Indicator(
-    mode="gauge+number",
-    value=pourcentage,
-    number={'suffix': "%", 'font': {'size': 36}},
-    gauge={
-        'axis': {'range': [0, 100]},
-        'bar': {'color': "skyblue", 'thickness': 0.3},
-        'bgcolor': "lightgray",
-        'steps': [
-            {'range': [0, 50], 'color': 'lightcoral'},
-            {'range': [50, 75], 'color': 'gold'},
-            {'range': [75, 100], 'color': 'lightgreen'}
-        ],
-    }
-))
-fig.update_layout(height=400)
+# Initialiser la caméra
+cap = cv2.VideoCapture(0)  # 0 = webcam par défaut
 
-# Affichage du graphique
-st.plotly_chart(fig)
+while run:
+    ret, frame = cap.read()
+    if not ret:
+        st.warning("Impossible d'accéder à la caméra")
+        break
+    # Convertir BGR (OpenCV) en RGB (Streamlit)
+    frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+    FRAME_WINDOW.image(frame)
+    
+cap.release()
