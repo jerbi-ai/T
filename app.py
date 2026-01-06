@@ -8,7 +8,7 @@ st.title("Dashboard avec Photo et Cercle de Pourcentage")
 image = Image.open("OneTech.jpg")  # Remplace par le nom de ton fichier
 
 # Création de 2 colonnes
-col1, col2 = st.columns([2, 1])  # col1 plus large pour le graphique, col2 pour la photo
+col1, col2 = st.columns([4, 2])  # col1 plus large pour le graphique, col2 pour la photo
 
 # 1️⃣ Photo dans la colonne de droite
 with col2:
