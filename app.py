@@ -2,36 +2,31 @@ import streamlit as st
 import plotly.graph_objects as go
 import pandas as pd
 import numpy as np
-from PIL import Image
 import matplotlib.pyplot as plt
 
-# ===============================
-# CONFIGURATION PAGE
-# ===============================
 st.set_page_config(layout="wide")
-st.markdown("""
+st.title("Dashboard avec Image en Arrière-Plan")
+
+# ===============================
+# CSS pour image en arrière-plan
+# ===============================
+st.markdown(
+    """
     <style>
-    /* Réduire les titres et textes */
-    .css-18e3th9 {padding-top: 0rem;}
-    h1 {font-size: 28px;}
-    h2 {font-size: 22px;}
-    h3 {font-size: 18px;}
-    p, span {font-size: 14px;}
+    .stApp {
+        background-image: url("OneTech.jpg");  /* nom du fichier ou URL */
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+        background-attachment: fixed;
+    }
     </style>
-""", unsafe_allow_html=True)
-
-st.markdown('<h1>Financial Dashboard</h1>', unsafe_allow_html=True)
-
-# ===============================
-# PHOTO EN HAUT À DROITE
-# ===============================
-col_logo1, col_logo2 = st.columns([6,1])
-with col_logo2:
-    image = Image.open("OneTech.jpg")  # Remplace par ton fichier
-    st.image(image, use_column_width=True)
+    """,
+    unsafe_allow_html=True
+)
 
 # ===============================
-# KPIs PRINCIPAUX
+# KPIs principaux
 # ===============================
 kpi_cols = st.columns(4)
 kpi_cols[0].metric("Total Accounts Receivable", "$6,621,280")
@@ -40,14 +35,14 @@ kpi_cols[2].metric("Equity Ratio", "75.38 %")
 kpi_cols[3].metric("Debt Equity", "1.10 %")
 
 # ===============================
-# GAUGES DONUTS (Matplotlib)
+# Gauges donuts
 # ===============================
 def plot_gauge(value, max_value=31, color='skyblue', title=""):
     fig, ax = plt.subplots(figsize=(2,2))
     ax.pie([value, max_value-value], colors=[color, 'lightgray'],
            startangle=90, counterclock=False, wedgeprops={'width':0.3})
     ax.set(aspect="equal")
-    plt.title(title, fontsize=10)
+    plt.title(title, fontsize=10, color='white')  # texte en blanc
     return fig
 
 gauge_cols = st.columns(4)
@@ -61,7 +56,7 @@ with gauge_cols[3]:
     st.pyplot(plot_gauge(28, 31, 'green', "DPO"))
 
 # ===============================
-# BAR CHART (Accounts Receivable & Payable)
+# Bar chart
 # ===============================
 st.subheader("Accounts Receivable and Payable Aging")
 df_bar = pd.DataFrame({
@@ -72,11 +67,12 @@ df_bar = pd.DataFrame({
 fig_bar = go.Figure()
 fig_bar.add_trace(go.Bar(x=df_bar["Age"], y=df_bar["Accounts Receivable"], name="Accounts Receivable"))
 fig_bar.add_trace(go.Bar(x=df_bar["Age"], y=df_bar["Accounts Payable"], name="Accounts Payable"))
-fig_bar.update_layout(barmode='group', height=300, font=dict(size=12))
+fig_bar.update_layout(barmode='group', height=300, font=dict(size=12, color='white'),
+                      plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='rgba(0,0,0,0)')
 st.plotly_chart(fig_bar, use_container_width=True)
 
 # ===============================
-# LINE CHART (Net vs Gross Working Capital)
+# Line chart
 # ===============================
 st.subheader("Net Working Capital vs Gross Working Capital")
 months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"]
@@ -84,24 +80,8 @@ net_wc = [100000, 120000, 110000, 150000, 170000, 140000, 180000, 190000, 160000
 gross_wc = [200000, 220000, 210000, 250000, 270000, 240000, 280000, 290000, 260000, 240000, 230000, 220000]
 
 fig_line = go.Figure()
-fig_line.add_trace(go.Scatter(x=months, y=net_wc, mode='lines+markers', name='Net Working Capital'))
-fig_line.add_trace(go.Scatter(x=months, y=gross_wc, mode='lines+markers', name='Gross Working Capital'))
-fig_line.update_layout(height=300, font=dict(size=12))
+fig_line.add_trace(go.Scatter(x=months, y=net_wc, mode='lines+markers', name='Net WC'))
+fig_line.add_trace(go.Scatter(x=months, y=gross_wc, mode='lines+markers', name='Gross WC'))
+fig_line.update_layout(height=300, font=dict(size=12, color='white'),
+                       plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='rgba(0,0,0,0)')
 st.plotly_chart(fig_line, use_container_width=True)
-
-# ===============================
-# STACKED BAR CHART (Profit & Loss)
-# ===============================
-st.subheader("Profit and Loss Summary")
-profit_data = pd.DataFrame({
-    "Month": months,
-    "Revenue": np.random.randint(500000, 1000000, 12),
-    "Cost": np.random.randint(200000, 500000, 12),
-    "Expense": np.random.randint(100000, 200000, 12)
-})
-fig_stack = go.Figure()
-fig_stack.add_trace(go.Bar(x=profit_data["Month"], y=profit_data["Revenue"], name="Revenue"))
-fig_stack.add_trace(go.Bar(x=profit_data["Month"], y=profit_data["Cost"], name="Cost"))
-fig_stack.add_trace(go.Bar(x=profit_data["Month"], y=profit_data["Expense"], name="Expense"))
-fig_stack.update_layout(barmode='stack', height=300, font=dict(size=12))
-st.plotly_chart(fig_stack, use_container_width=True)
