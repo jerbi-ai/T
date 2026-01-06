@@ -3,3 +3,7 @@ matplotlib
 plotly
 opencv-python
 PILLOW
+matplotlib
+pandas
+numpy
+matplotlib
