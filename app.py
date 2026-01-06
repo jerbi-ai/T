@@ -1,4 +1,4 @@
 import streamlit as st
 
-st.title("Bonjour")
-st.write("Bonjour")
+st.title("MONGI YA BEHI")
+st.write("SMICHI MONGI")
