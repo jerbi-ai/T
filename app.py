@@ -27,7 +27,7 @@ st.markdown('<h1>Financial Dashboard</h1>', unsafe_allow_html=True)
 # ===============================
 col_logo1, col_logo2 = st.columns([6,1])
 with col_logo2:
-    image = Image.open("photo.jpg")  # Remplace par ton fichier
+    image = Image.open("OneTech.jpg")  # Remplace par ton fichier
     st.image(image, use_column_width=True)
 
 # ===============================
