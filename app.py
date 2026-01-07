@@ -40,7 +40,7 @@ st.markdown("<h1 style='font-size:26px;'>📊TEST</h1>", unsafe_allow_html=True)
 # KPIs
 # ===============================
 k1, k2, k3, k4 = st.columns(4)
-k1.metric("Accounts Receivable", "$6,621,280")
+k1.metric("Accounts Receivable", "$300,621,280")
 k2.metric("Accounts Payable", "$1,630,270")
 k3.metric("Equity Ratio", "75.38 %")
 k4.metric("Debt Equity", "1.10 %")
