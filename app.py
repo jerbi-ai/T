@@ -2,7 +2,7 @@ import streamlit as st
 from PIL import Image
 
 # Charger l'image
-image = Image.open("onetech.jpg")
+image = Image.open("OneTech.jpg")
 
 # Titre de l'application
 st.title("Affichage d'une image")
