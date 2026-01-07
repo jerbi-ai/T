@@ -34,7 +34,7 @@ h1, h2, h3, h4, h5, h6, p, span, label {
 # ===============================
 # TITRE
 # ===============================
-st.markdown("<h1 style='font-size:26px;'>📊ONETECH</h1>", unsafe_allow_html=True)
+st.markdown("<h1 style='font-size:26px;'>📊TEST</h1>", unsafe_allow_html=True)
 
 # ===============================
 # KPIs
