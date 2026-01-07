@@ -1,156 +1,66 @@
+
 import streamlit as st
-import plotly.graph_objects as go
-import pandas as pd
-import numpy as np
-import matplotlib.pyplot as plt
+import base64
 
-# ===============================
-# CONFIG PAGE
-# ===============================
-st.set_page_config(layout="wide")
+st.set_page_config(layout="wide", page_title="Photo Plein Écran")
 
-# ===============================
-# CSS : BACKGROUND ORANGE + STYLE
-# ===============================
-st.markdown("""
-<style>
-.stApp {
-    background-color: #F28C28;
-}
+# --- Fonction pour convertir une image en base64 ---
+def image_to_base64(path):
+    with open(path, "rb") as f:
+        return base64.b64encode(f.read()).decode()
 
-h1, h2, h3, h4, h5, h6, p, span, label {
-    color: white !important;
-    font-size: 14px;
-}
+# --- UI ---
+st.title("Photo Plein Écran (Background)")
+st.write("Charge une image pour l'afficher sur toute la fenêtre.")
 
-[data-testid="metric-container"] {
-    background-color: rgba(255,255,255,0.15);
-    padding: 10px;
-    border-radius: 10px;
-}
-</style>
-""", unsafe_allow_html=True)
+uploaded_file = st.file_uploader("Choisir une image (JPG/PNG)", type=["jpg", "jpeg", "png"])
 
-# ===============================
-# TITRE
-# ===============================
-st.markdown("<h1 style='font-size:26px;'>📊TEST</h1>", unsafe_allow_html=True)
+# --- CSS de fond plein écran ---
+if uploaded_file:
+    # Sauvegarder le fichier uploadé pour lecture
+    with open("temp_image", "wb") as f:
+        f.write(uploaded_file.getbuffer())
 
-# ===============================
-# KPIs
-# ===============================
-k1, k2, k3, k4 = st.columns(4)
-k1.metric("Accounts Receivable", "$300,621,280")
-k2.metric("Accounts Payable", "$1,630,270")
-k3.metric("Equity Ratio", "75.38 %")
-k4.metric("Debt Equity", "1.10 %")
+    b64_img = image_to_base64("temp_image")
 
-# ===============================
-# DONUTS / GAUGES (CORRIGÉS)
-# ===============================
-def donut(value, max_value, title, color):
-    fig, ax = plt.subplots(figsize=(2,2))
+    page_bg_css = f"""
+    <style>
+    /* Supprime les marges/paddings par défaut */
+    .stApp {{
+        margin: 0;
+        padding: 0;
+        height: 100vh;
+        background-image: url("data:image/png;base64,{b64_img}");
+        background-size: cover;       /* couvre toute la fenêtre, coupe si besoin */
+        background-position: center;  /* centre l'image */
+        background-repeat: no-repeat;
+    }}
 
-    ax.pie(
-        [value, max_value - value],
-        colors=[color, (1, 1, 1, 0.3)],  # RGBA VALIDE
-        startangle=90,
-        counterclock=False,
-        wedgeprops={"width": 0.3}
+    /* Optionnel : cacher l’en-tête et le footer Streamlit pour un vrai plein écran */
+    header, footer {{
+        visibility: hidden;
+        height: 0;
+    }}
+    </style>
+    """
+
+    st.markdown(page_bg_css, unsafe_allow_html=True)
+
+    # Optionnel : afficher un overlay de texte
+    st.markdown(
+        """
+        <div style="
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            color: white;
+            font-size: 18px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.6);
+        ">
+            Image en arrière-plan (plein écran)
+        </div>
+        """,
+        unsafe_allow_html=True
     )
-
-    ax.set(aspect="equal")
-    ax.set_title(title, fontsize=10, color="white")
-
-    fig.patch.set_alpha(0)
-    ax.set_facecolor("none")
-
-    return fig
-
-d1, d2, d3, d4 = st.columns(4)
-
-with d1:
-    st.pyplot(donut(0.7, 1, "Current Ratio", "#003f5c"))
-with d2:
-    st.pyplot(donut(10, 31, "DSI", "#bc5090"))
-with d3:
-    st.pyplot(donut(7, 31, "DSO", "#ff6361"))
-with d4:
-    st.pyplot(donut(28, 31, "DPO", "#58508d"))
-
-# ===============================
-# BAR CHART
-# ===============================
-st.markdown("### Accounts Aging")
-
-df_bar = pd.DataFrame({
-    "Age": ["Current", "1-30", "31-60", "61-90", "91+"],
-    "Receivable": [2100000, 1700000, 900000, 600000, 200000],
-    "Payable": [1200000, 250000, 100000, 80000, 20000]
-})
-
-fig_bar = go.Figure()
-fig_bar.add_bar(x=df_bar["Age"], y=df_bar["Receivable"], name="Receivable")
-fig_bar.add_bar(x=df_bar["Age"], y=df_bar["Payable"], name="Payable")
-
-fig_bar.update_layout(
-    barmode="group",
-    height=300,
-    plot_bgcolor="rgba(0,0,0,0)",
-    paper_bgcolor="rgba(0,0,0,0)",
-    font=dict(color="white", size=12),
-    legend=dict(font=dict(color="white"))
-)
-
-st.plotly_chart(fig_bar, use_container_width=True)
-
-# ===============================
-# LINE CHART
-# ===============================
-st.markdown("### Working Capital")
-
-months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"]
-net_wc = np.random.randint(100000, 200000, 12)
-gross_wc = np.random.randint(200000, 300000, 12)
-
-fig_line = go.Figure()
-fig_line.add_trace(go.Scatter(x=months, y=net_wc, name="Net WC", mode="lines+markers"))
-fig_line.add_trace(go.Scatter(x=months, y=gross_wc, name="Gross WC", mode="lines+markers"))
-
-fig_line.update_layout(
-    height=300,
-    plot_bgcolor="rgba(0,0,0,0)",
-    paper_bgcolor="rgba(0,0,0,0)",
-    font=dict(color="white", size=12),
-    legend=dict(font=dict(color="white"))
-)
-
-st.plotly_chart(fig_line, use_container_width=True)
-
-# ===============================
-# STACKED BAR
-# ===============================
-st.markdown("### Profit & Loss")
-
-df_pl = pd.DataFrame({
-    "Month": months,
-    "Revenue": np.random.randint(500000, 900000, 12),
-    "Cost": np.random.randint(200000, 500000, 12),
-    "Expense": np.random.randint(100000, 200000, 12)
-})
-
-fig_pl = go.Figure()
-fig_pl.add_bar(x=df_pl["Month"], y=df_pl["Revenue"], name="Revenue")
-fig_pl.add_bar(x=df_pl["Month"], y=df_pl["Cost"], name="Cost")
-fig_pl.add_bar(x=df_pl["Month"], y=df_pl["Expense"], name="Expense")
-
-fig_pl.update_layout(
-    barmode="stack",
-    height=300,
-    plot_bgcolor="rgba(0,0,0,0)",
-    paper_bgcolor="rgba(0,0,0,0)",
-    font=dict(color="white", size=12),
-    legend=dict(font=dict(color="white"))
-)
-
-st.plotly_chart(fig_pl, use_container_width=True)
+else:
+    st.info("Importe une image pour l’afficher en fond de page.")
