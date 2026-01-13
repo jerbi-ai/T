@@ -2,7 +2,7 @@ import streamlit as st
 import plotly.graph_objects as go
 
 # Valeur fixe
-valeur = 75  # ici on fixe la valeur à 75
+valeur = 90  # ici on fixe la valeur à 75
 
 # Création de la jauge
 fig = go.Figure(go.Indicator(
