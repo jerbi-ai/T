@@ -9,7 +9,7 @@ fig = go.Figure(go.Indicator(
     mode="gauge+number+delta",
     value=valeur,
     domain={'x': [0, 1], 'y': [0, 1]},
-    title={'text': "Performance"},
+    title={'text': "Nombre de jours"},
     gauge={
         'axis': {'range': [0, 100]},
         'bar': {'color': "blue"},
