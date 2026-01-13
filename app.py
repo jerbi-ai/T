@@ -1,10 +1,10 @@
 import streamlit as st
 
 # Titre de l'application
-st.title("Suivi des accidents")
+st.title("nombre de reclamations")
 
 # Données (ici on met un exemple)
-nombre_accidents = 35
+nombre_accidents = 3
 
 # Affichage de la note
 st.markdown(f"📊 **Le nombre d'accidents ce mois est {nombre_accidents}**")
