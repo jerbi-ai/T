@@ -1,8 +1,8 @@
 import streamlit as st
 import plotly.graph_objects as go
 
-# Exemple de valeur à afficher
-valeur = st.slider("Choisis une valeur", 0, 100, 25)
+# Valeur fixe
+valeur = 75  # ici on fixe la valeur à 75
 
 # Création de la jauge
 fig = go.Figure(go.Indicator(
