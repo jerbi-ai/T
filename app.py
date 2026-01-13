@@ -1,34 +1,24 @@
 import streamlit as st
-import matplotlib.pyplot as plt
+import plotly.graph_objects as go
 
-# --- CSS pour l'image en arrière-plan ---
-st.markdown(
-    f"""
-    <style>
-    .stApp {{
-        background-image: url("OneTech.jpg");
-        background-size: cover;
-        background-position: center;
-    }}
-    </style>
-    """,
-    unsafe_allow_html=True
-)
+# Exemple de valeur à afficher
+valeur = st.slider("Choisis une valeur", 0, 100, 25)
 
-# --- Titre ---
-st.title("Suivi des accidents")
+# Création de la jauge
+fig = go.Figure(go.Indicator(
+    mode="gauge+number+delta",
+    value=valeur,
+    domain={'x': [0, 1], 'y': [0, 1]},
+    title={'text': "Performance"},
+    gauge={
+        'axis': {'range': [0, 100]},
+        'bar': {'color': "blue"},
+        'steps': [
+            {'range': [0, 50], 'color': "lightgray"},
+            {'range': [50, 100], 'color': "gray"}],
+        'threshold': {
+            'line': {'color': "red", 'width': 4},
+            'thickness': 0.75,
+            'value': valeur}}))
 
-# --- Données ---
-nombre_accidents = 35
-
-# --- Affichage de la note ---
-st.markdown(f"📊 **Le nombre d'accidents ce mois est {nombre_accidents}**")
-
-# --- Graphique ---
-mois = ["Ce mois"]
-valeurs = [nombre_accidents]
-
-plt.bar(mois, valeurs, color='red')
-plt.ylabel("Nombre d'accidents")
-plt.title("Accidents ce mois")
-st.pyplot(plt)
+st.plotly_chart(fig, use_container_width=True)
