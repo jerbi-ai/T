@@ -1,28 +1,22 @@
 import streamlit as st
-import base64
 
-# Configuration de la page en mode large
-st.set_page_config(layout="wide")
+# Titre de l'application
+st.title("Suivi des accidents")
 
-# Fonction pour convertir l'image en base64
-def get_base64_image(image_path):
-    with open(image_path, "rb") as img_file:
-        return base64.b64encode(img_file.read()).decode()
+# Données (ici on met un exemple)
+nombre_accidents = 35
 
-img_base64 = get_base64_image("OneTech.jpg")
+# Affichage de la note
+st.markdown(f"📊 **Le nombre d'accidents ce mois est {nombre_accidents}**")
 
-# CSS pour image plein écran
-st.markdown(
-    f"""
-    <style>
-    .stApp {{
-        background-image: url("data:image/jpg;base64,{img_base64}");
-        background-size: cover;
-        background-position: center;
-        background-repeat: no-repeat;
-        height: 100vh;
-    }}
-    </style>
-    """,
-    unsafe_allow_html=True
-)
+# Optionnel : ajouter un graphique simple
+import matplotlib.pyplot as plt
+
+# Exemple de graphique pour visualiser
+mois = ["Ce mois"]
+valeurs = [nombre_accidents]
+
+plt.bar(mois, valeurs, color='red')
+plt.ylabel("Nombre d'accidents")
+plt.title("Accidents ce mois")
+st.pyplot(plt)
