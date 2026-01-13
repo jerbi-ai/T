@@ -1,18 +1,17 @@
-# realtime_clock.py
+# realtime_clock_tunisia.py
 import streamlit as st
 import datetime
 import time
+import pytz  # pour gérer le fuseau horaire
 
-st.set_page_config(page_title="Horloge en Temps Réel", layout="centered")
-st.title("🕒 Horloge en Temps Réel")
+st.set_page_config(page_title="Horloge Tunisie", layout="centered")
+st.title("🕒 Heure en Temps Réel - Tunisie")
 
-# Créer un conteneur vide qui sera mis à jour
+# Conteneur vide pour l'heure
 clock_placeholder = st.empty()
 
-# Boucle infinie pour mettre à jour l'heure
+# Fuseau horaire Tunisie
+tunis_tz = pytz.timezone("Africa/Tunis")
+
 while True:
-    now = datetime.datetime.now()
-    current_time = now.strftime("%H:%M:%S")  # Format Heure:Minute:Seconde
-    current_date = now.strftime("%A %d %B %Y")  # Format Jour Date Mois Année
-    clock_placeholder.markdown(f"### {current_date}\n## {current_time}")
-    time.sleep(1)
+    now = datetime.datetime.now(tunis_tz)
