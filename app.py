@@ -8,7 +8,7 @@ import datetime
 # Initialisation
 # ======================
 st.set_page_config(page_title="SafeYear 2026", layout="wide")
-st.title("📅 SafeYear 2026 - Suivi des accidents")
+st.title("SafeYear 2026 - Suivi des accidents")
 
 # ======================
 # Création du calendrier
