@@ -20,7 +20,7 @@ st.markdown(
 )
 
 # Sous-titre
-st.subheader("🏭 Suivi des accidents")
+st.subheader("🚨 Suivi des accidents")
 
 # ======================
 # Dernier accident connu
