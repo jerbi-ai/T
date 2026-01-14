@@ -13,15 +13,15 @@ st.set_page_config(page_title="SafeYear 2026", layout="wide")
 st.markdown(
     """
     <h1 style='text-align: center;'>
-        <span style='color: blue;'>TTE</span> 
-        <span style='color: orange;'>INTERNATIONAL</span>
+        <span style='color: blue;'>ONE</span> 
+        <span style='color: orange;'>TECH</span>
     </h1>
     """,
     unsafe_allow_html=True
 )
 
 # Sous-titre
-st.subheader("📅 SafeYear 2026 - Suivi des accidents")
+st.subheader("📅 Suivi des accidents")
 
 # ======================
 # Dernier accident connu
