@@ -57,7 +57,7 @@ st.sidebar.header("📌 Enregistrer un accident")
 date_accident = st.sidebar.date_input(
     "Date de l'accident",
     value=yesterday,
-    max_value=yesterday  # pas possible de sélectionner aujourd'hui ou demain
+    max_value=yesterday
 )
 
 description = st.sidebar.text_input("Description (optionnelle)")
@@ -105,7 +105,14 @@ def calculate_days_since_last_accident(df, last_accident_date):
 df = calculate_days_since_last_accident(df, last_accident_date)
 
 # ======================
-# Dernier accident (en haut)
+# Calculer le nombre total de jours sans accident depuis le dernier accident
+# ======================
+total_days_without_accident_since_last = df.loc[df["Date"] > pd.Timestamp(last_accident_date), "Accident"]
+# Compter uniquement les jours sans accident
+total_days_without_accident_since_last = (total_days_without_accident_since_last == False).sum()
+
+# ======================
+# Bloc Dernier accident + compteur + description + jours sans accident depuis
 # ======================
 days_since_last_accident = df["JoursDepuisDernierAccident"].iloc[-1]
 
@@ -115,6 +122,7 @@ st.markdown(
         <h3>Dernier accident ({last_accident_date.strftime('%d/%m/%Y')})</h3>
         <h2>{days_since_last_accident} jours depuis</h2>
         <p style='font-size:18px;'>{last_accident_desc}</p>
+        <p style='font-size:18px; font-weight:bold;'>Nombre de jours sans accident depuis le dernier accident : {total_days_without_accident_since_last}</p>
     </div>
     """,
     unsafe_allow_html=True
