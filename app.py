@@ -9,7 +9,7 @@ import datetime
 # ======================
 st.set_page_config(page_title="SafeYear 2026", layout="wide")
 
-
+# TITRE COLORÉ EN HAUT
 st.markdown(
     """
     <h1 style='text-align: center;'>
@@ -18,8 +18,6 @@ st.markdown(
     """,
     unsafe_allow_html=True
 )
-# TITRE COLORÉ EN HAUT
-
 
 # Sous-titre
 st.subheader("📅 Suivi des accidents")
@@ -28,7 +26,7 @@ st.subheader("📅 Suivi des accidents")
 # Dernier accident connu
 # ======================
 last_accident_date = datetime.date(2025, 12, 26)
-last_accident_desc = "un élément de pesage est tombé et a heurté le genou droit de l’opératrice, entraînant une blessure,lors de l'opération de pesage"
+last_accident_desc = "un élément de pesage est tombé et a heurté le genou droit de l’opératrice, entraînant une blessure, lors de l'opération de pesage"
 
 # ======================
 # Création du calendrier
@@ -106,7 +104,7 @@ def calculate_days_since_last_accident(df, last_accident_date):
 df = calculate_days_since_last_accident(df, last_accident_date)
 
 # ======================
-# Dernier accident (en haut)
+# Dernier accident (en haut) avec description en rouge clair
 # ======================
 days_since_last_accident = df["JoursDepuisDernierAccident"].iloc[-1]
 
@@ -114,8 +112,8 @@ st.markdown(
     f"""
     <div style='text-align: center; margin-bottom: 20px;'>
         <h3>Dernier accident ({last_accident_date.strftime('%d/%m/%Y')})</h3>
-        <h2>{days_since_last_accident} jours </h2>
-        <p style='font-size:18px;'>{last_accident_desc}</p>
+        <h2>{days_since_last_accident} jours</h2>
+        <p style='font-size:18px; color: lightcoral; font-weight:bold;'>{last_accident_desc}</p>
     </div>
     """,
     unsafe_allow_html=True
@@ -144,12 +142,21 @@ with col2:
     )
 
 # ======================
-# Nombre de jours sans accident depuis le dernier accident
+# Nombre de jours sans accident depuis le dernier accident (une seule fois)
 # ======================
 total_days_without_accident_since_last = df.loc[df["Date"] > pd.Timestamp(last_accident_date), "Accident"]
 total_days_without_accident_since_last = (total_days_without_accident_since_last == False).sum()
 
-
+st.markdown(
+    f"""
+    <div style='text-align: center; margin-top: 10px;'>
+        <p style='font-size:18px; font-weight:bold;'>
+            Nombre de jours sans accident depuis le dernier accident : {total_days_without_accident_since_last}
+        </p>
+    </div>
+    """,
+    unsafe_allow_html=True
+)
 
 st.divider()
 
