@@ -7,21 +7,21 @@ import datetime
 # ======================
 # Initialisation
 # ======================
-st.set_page_config(page_title="", layout="wide")
+st.set_page_config(page_title="SafeYear 2026", layout="wide")
 
 # TITRE COLORÉ EN HAUT
 st.markdown(
     """
     <h1 style='text-align: center;'>
-        <span style='color: blue;'>ONE</span> 
-        <span style='color: orange;'>TECH</span>
+        <span style='color: blue;'>TTE</span> 
+        <span style='color: orange;'>INTERNATIONAL</span>
     </h1>
     """,
     unsafe_allow_html=True
 )
 
 # Sous-titre
-st.subheader("📅 Suivi des accidents")
+st.subheader("📅 SafeYear 2026 - Suivi des accidents")
 
 # ======================
 # Dernier accident connu
@@ -105,14 +105,7 @@ def calculate_days_since_last_accident(df, last_accident_date):
 df = calculate_days_since_last_accident(df, last_accident_date)
 
 # ======================
-# Calculer le nombre total de jours sans accident depuis le dernier accident
-# ======================
-total_days_without_accident_since_last = df.loc[df["Date"] > pd.Timestamp(last_accident_date), "Accident"]
-# Compter uniquement les jours sans accident
-total_days_without_accident_since_last = (total_days_without_accident_since_last == False).sum()
-
-# ======================
-# Bloc Dernier accident + compteur + description + jours sans accident depuis
+# Dernier accident (en haut)
 # ======================
 days_since_last_accident = df["JoursDepuisDernierAccident"].iloc[-1]
 
@@ -122,7 +115,6 @@ st.markdown(
         <h3>Dernier accident ({last_accident_date.strftime('%d/%m/%Y')})</h3>
         <h2>{days_since_last_accident} jours depuis</h2>
         <p style='font-size:18px;'>{last_accident_desc}</p>
-        <p style='font-size:18px; font-weight:bold;'>Nombre de jours sans accident depuis le dernier accident : {total_days_without_accident_since_last}</p>
     </div>
     """,
     unsafe_allow_html=True
@@ -149,6 +141,23 @@ with col2:
         "Total d'accidents enregistrés",
         total_accidents
     )
+
+# ======================
+# Nombre de jours sans accident depuis le dernier accident
+# ======================
+total_days_without_accident_since_last = df.loc[df["Date"] > pd.Timestamp(last_accident_date), "Accident"]
+total_days_without_accident_since_last = (total_days_without_accident_since_last == False).sum()
+
+st.markdown(
+    f"""
+    <div style='text-align: center; margin-top: 10px;'>
+        <p style='font-size:18px; font-weight:bold;'>
+            Nombre de jours sans accident depuis le dernier accident : {total_days_without_accident_since_last}
+        </p>
+    </div>
+    """,
+    unsafe_allow_html=True
+)
 
 st.divider()
 
