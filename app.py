@@ -25,10 +25,10 @@ def create_calendar():
 df = create_calendar()
 
 # ======================
-# Limiter jusqu'à aujourd'hui
+# Limiter jusqu'à hier
 # ======================
-today = datetime.date.today()
-df = df[df["Date"] <= pd.Timestamp(today)]
+yesterday = datetime.date.today() - datetime.timedelta(days=1)
+df = df[df["Date"] <= pd.Timestamp(yesterday)]
 
 # ======================
 # Ajout accident (Sidebar)
@@ -37,7 +37,8 @@ st.sidebar.header("📌 Enregistrer un accident")
 
 date_accident = st.sidebar.date_input(
     "Date de l'accident",
-    value=today
+    value=yesterday,
+    max_value=yesterday  # on ne peut pas sélectionner demain ou aujourd'hui
 )
 
 if st.sidebar.button("Ajouter accident"):
@@ -66,7 +67,7 @@ df = calculate_lta_days(df)
 # ======================
 # 📊 STATISTIQUES GLOBALES (EN HAUT)
 # ======================
-st.subheader("📊 Statistiques globales (du 1er janvier à aujourd'hui)")
+st.subheader("📊 Statistiques globales (du 1er janvier jusqu'à hier)")
 
 total_days_without_accident = df["JoursSansAccident"].iloc[-1]
 total_accidents = df["Accident"].sum()
@@ -90,7 +91,7 @@ st.divider()
 # ======================
 # Affichage du calendrier
 # ======================
-st.subheader("📅 Calendrier (jusqu'à aujourd'hui)")
+st.subheader("Calendrier (du 1er janvier jusqu'à hier)")
 
 months = df["Date"].dt.month.unique()
 
