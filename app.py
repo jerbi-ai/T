@@ -8,7 +8,20 @@ import datetime
 # Initialisation
 # ======================
 st.set_page_config(page_title="SafeYear 2026", layout="wide")
-st.title("SafeYear 2026 - Suivi des accidents")
+
+# TITRE COLORÉ EN HAUT
+st.markdown(
+    """
+    <h1 style='text-align: center;'>
+        <span style='color: blue;'>TTE</span> 
+        <span style='color: orange;'>INTERNATIONAL</span>
+    </h1>
+    """,
+    unsafe_allow_html=True
+)
+
+# Sous-titre
+st.subheader("📅 SafeYear 2026 - Suivi des accidents")
 
 # ======================
 # Création du calendrier
@@ -40,6 +53,8 @@ date_accident = st.sidebar.date_input(
     value=yesterday,
     max_value=yesterday  # on ne peut pas sélectionner demain ou aujourd'hui
 )
+
+description = st.sidebar.text_input("Description (optionnelle)")
 
 if st.sidebar.button("Ajouter accident"):
     df.loc[df["Date"] == pd.Timestamp(date_accident), "Accident"] = True
@@ -91,7 +106,7 @@ st.divider()
 # ======================
 # Affichage du calendrier
 # ======================
-st.subheader("Calendrier (du 1er janvier jusqu'à hier)")
+st.subheader("📅 Calendrier (du 1er janvier jusqu'à hier)")
 
 months = df["Date"].dt.month.unique()
 
