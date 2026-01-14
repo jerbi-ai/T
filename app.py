@@ -25,16 +25,20 @@ def create_calendar():
 df = create_calendar()
 
 # ======================
+# Limiter jusqu'à aujourd'hui
+# ======================
+today = datetime.date.today()
+df = df[df["Date"] <= pd.Timestamp(today)]
+
+# ======================
 # Ajout accident (Sidebar)
 # ======================
 st.sidebar.header("📌 Enregistrer un accident")
 
 date_accident = st.sidebar.date_input(
     "Date de l'accident",
-    value=datetime.date(2026, 1, 1)
+    value=today
 )
-
-description = st.sidebar.text_input("Description (optionnelle)")
 
 if st.sidebar.button("Ajouter accident"):
     df.loc[df["Date"] == pd.Timestamp(date_accident), "Accident"] = True
@@ -62,16 +66,16 @@ df = calculate_lta_days(df)
 # ======================
 # 📊 STATISTIQUES GLOBALES (EN HAUT)
 # ======================
-st.subheader("📊 Statistiques globales")
+st.subheader("📊 Statistiques globales (du 1er janvier à aujourd'hui)")
 
-total_days_without_accident = df["JoursSansAccident"].max()
+total_days_without_accident = df["JoursSansAccident"].iloc[-1]
 total_accidents = df["Accident"].sum()
 
 col1, col2 = st.columns(2)
 
 with col1:
     st.metric(
-        "Plus longue série de jours sans accident",
+        "Jours sans accident depuis le 1er janvier",
         total_days_without_accident
     )
 
@@ -86,7 +90,7 @@ st.divider()
 # ======================
 # Affichage du calendrier
 # ======================
-st.subheader("📅 Calendrier 2026")
+st.subheader("📅 Calendrier (jusqu'à aujourd'hui)")
 
 months = df["Date"].dt.month.unique()
 
