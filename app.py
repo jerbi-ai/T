@@ -27,7 +27,7 @@ st.subheader("📅 Suivi des accidents")
 # Dernier accident connu
 # ======================
 last_accident_date = datetime.date(2025, 12, 26)
-last_accident_desc = "Accident"
+last_accident_desc = "un élément de pesage est tombé et a heurté le genou droit de l’opératrice, entraînant une blessure,lors de l'pération de pesage"
 
 # ======================
 # Création du calendrier
