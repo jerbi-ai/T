@@ -21,7 +21,7 @@ st.markdown(
 )
 
 # Sous-titre
-st.subheader("📅 SafeYear 2026 - Suivi des accidents")
+st.subheader("📅 Suivi des accidents")
 
 # ======================
 # Dernier accident connu
