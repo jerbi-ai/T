@@ -148,16 +148,7 @@ with col2:
 total_days_without_accident_since_last = df.loc[df["Date"] > pd.Timestamp(last_accident_date), "Accident"]
 total_days_without_accident_since_last = (total_days_without_accident_since_last == False).sum()
 
-st.markdown(
-    f"""
-    <div style='text-align: center; margin-top: 10px;'>
-        <p style='font-size:18px; font-weight:bold;'>
-            Nombre de jours sans accident depuis le dernier accident : {total_days_without_accident_since_last}
-        </p>
-    </div>
-    """,
-    unsafe_allow_html=True
-)
+
 
 st.divider()
 
