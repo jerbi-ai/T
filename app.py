@@ -13,7 +13,7 @@ st.set_page_config(page_title="SafeYear 2026", layout="wide")
 st.markdown(
     """
     <h1 style='text-align: center;'>
-        <span style='color: blue;'>ONE</span><span style='color: orange;'>TECH</span>
+        <span style='color: blue;'>MONGI</span><span style='color: orange;'>TECH</span>
     </h1>
     """,
     unsafe_allow_html=True
