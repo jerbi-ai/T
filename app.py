@@ -113,7 +113,7 @@ st.markdown(
     f"""
     <div style='text-align: center; margin-bottom: 20px;'>
         <h3>Dernier accident ({last_accident_date.strftime('%d/%m/%Y')})</h3>
-        <h2>{days_since_last_accident} jours depuis</h2>
+        <h2>{days_since_last_accident} jours </h2>
         <p style='font-size:18px;'>{last_accident_desc}</p>
     </div>
     """,
