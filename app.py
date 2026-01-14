@@ -7,7 +7,7 @@ import datetime
 # ======================
 # Initialisation
 # ======================
-st.set_page_config(page_title="SafeYear 2026", layout="wide")
+st.set_page_config(page_title="", layout="wide")
 
 # TITRE COLORÉ EN HAUT
 st.markdown(
