@@ -26,7 +26,16 @@ st.subheader("🚨 Suivi des accidents")
 # Dernier accident connu
 # ======================
 last_accident_date = datetime.date(2025, 12, 26)
-last_accident_desc = "Lors de l’opération de pesage, un élément est tombé et a heurté le genou droit de l’opératrice, entraînant une blessure."
+last_accident_desc = (
+    "Lors de l’opération de pesage, un élément est tombé et a heurté "
+    "le genou droit de l’opératrice, entraînant une blessure."
+)
+
+# ======================
+# Dates utiles
+# ======================
+today = datetime.date.today()
+yesterday = today - datetime.timedelta(days=1)
 
 # ======================
 # Création du calendrier
@@ -42,10 +51,7 @@ def create_calendar():
 
 df = create_calendar()
 
-# ======================
 # Limiter jusqu'à hier
-# ======================
-yesterday = datetime.date.today() - datetime.timedelta(days=1)
 df = df[df["Date"] <= pd.Timestamp(yesterday)]
 
 # ======================
@@ -59,61 +65,43 @@ date_accident = st.sidebar.date_input(
     max_value=yesterday
 )
 
-description = st.sidebar.text_input("Description (optionnelle)")
-
 if st.sidebar.button("Ajouter accident"):
     df.loc[df["Date"] == pd.Timestamp(date_accident), "Accident"] = True
     st.sidebar.success(f"Accident ajouté pour {date_accident}")
 
 # ======================
-# Calcul des jours sans accident depuis le 1er janvier
+# Calcul jours sans accident depuis 1er janvier
 # ======================
 def calculate_lta_days(df):
     count = 0
-    consecutive = []
-
+    values = []
     for accident in df["Accident"]:
         if not accident:
             count += 1
         else:
             count = 0
-        consecutive.append(count)
-
-    df["JoursSansAccident"] = consecutive
+        values.append(count)
+    df["JoursSansAccident"] = values
     return df
 
 df = calculate_lta_days(df)
 
 # ======================
-# Calcul des jours depuis le dernier accident
+# ✅ CALCUL CORRECT : jours depuis le dernier accident jusqu'à hier
 # ======================
-def calculate_days_since_last_accident(df, last_accident_date):
-    days_since = []
-    last_acc = pd.Timestamp(last_accident_date)
-    count = (df["Date"].iloc[0] - last_acc).days  # compteur initial
-
-    for accident in df["Accident"]:
-        count += 1
-        if accident:
-            count = 0
-        days_since.append(count)
-
-    df["JoursDepuisDernierAccident"] = days_since
-    return df
-
-df = calculate_days_since_last_accident(df, last_accident_date)
+days_since_last_accident = (yesterday - last_accident_date).days
 
 # ======================
-# Dernier accident (en haut) avec description en rouge clair
+# Affichage Dernier accident
 # ======================
-days_since_last_accident = df["JoursDepuisDernierAccident"].iloc[-1]
-
 st.markdown(
     f"""
     <div style='text-align: center; margin-bottom: 20px;'>
         <h3>Dernier accident ({last_accident_date.strftime('%d/%m/%Y')})</h3>
-        <h2>{days_since_last_accident} jours</h2>
-        <p style='font-size:18px; color: lightcoral; font-weight:bold;'>{last_accident_desc}</p>
+        <h2>{days_since_last_accident} jours sans accident</h2>
+        <p style='font-size:18px; color: lightcoral; font-weight:bold;'>
+            {last_accident_desc}
+        </p>
     </div>
     """,
     unsafe_allow_html=True
@@ -130,28 +118,19 @@ total_accidents = df["Accident"].sum()
 col1, col2 = st.columns(2)
 
 with col1:
-    st.metric(
-        "Jours sans accident depuis le 1er janvier",
-        total_days_without_accident
-    )
+    st.metric("Jours sans accident depuis le 1er janvier", total_days_without_accident)
 
 with col2:
-    st.metric(
-        "Total d'accidents enregistrés",
-        total_accidents
-    )
+    st.metric("Total d'accidents enregistrés", total_accidents)
 
 # ======================
-# Nombre de jours sans accident depuis le dernier accident (une seule fois)
+# Nombre de jours sans accident depuis le dernier accident
 # ======================
-total_days_without_accident_since_last = df.loc[df["Date"] > pd.Timestamp(last_accident_date), "Accident"]
-total_days_without_accident_since_last = (total_days_without_accident_since_last == False).sum()
-
 st.markdown(
     f"""
     <div style='text-align: center; margin-top: 10px;'>
         <p style='font-size:18px; font-weight:bold;'>
-            Nombre de jours sans accident depuis le dernier accident : {total_days_without_accident_since_last}
+            Nombre de jours sans accident depuis le dernier accident : {days_since_last_accident}
         </p>
     </div>
     """,
@@ -161,30 +140,22 @@ st.markdown(
 st.divider()
 
 # ======================
-# Affichage du calendrier
+# Calendrier
 # ======================
 st.subheader("📅 Calendrier (du 1er janvier jusqu'à hier)")
 
 months = df["Date"].dt.month.unique()
 
 for month in months:
-    month_name = (
-        df[df["Date"].dt.month == month]["Date"]
-        .dt.strftime("%B %Y")
-        .iloc[0]
-    )
-
+    month_name = df[df["Date"].dt.month == month]["Date"].dt.strftime("%B %Y").iloc[0]
     st.markdown(f"### {month_name}")
 
     month_df = df[df["Date"].dt.month == month]
 
     display_df = pd.DataFrame({
         "Jour": month_df["Date"].dt.day,
-        "Accident": month_df["Accident"].apply(
-            lambda x: "🔴" if x else "🟢"
-        ),
-        "Jours consécutifs sans accident": month_df["JoursSansAccident"],
-        "Jours depuis dernier accident": month_df["JoursDepuisDernierAccident"]
+        "Accident": month_df["Accident"].map(lambda x: "🔴" if x else "🟢"),
+        "Jours consécutifs sans accident": month_df["JoursSansAccident"]
     })
 
     st.table(display_df)
