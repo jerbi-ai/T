@@ -105,15 +105,30 @@ def calculate_days_since_last_accident(df, last_accident_date):
 df = calculate_days_since_last_accident(df, last_accident_date)
 
 # ======================
-# 📊 STATISTIQUES GLOBALES (EN HAUT)
+# Dernier accident (en haut)
+# ======================
+days_since_last_accident = df["JoursDepuisDernierAccident"].iloc[-1]
+
+st.markdown(
+    f"""
+    <div style='text-align: center; margin-bottom: 20px;'>
+        <h3>Dernier accident ({last_accident_date.strftime('%d/%m/%Y')})</h3>
+        <h2>{days_since_last_accident} jours depuis</h2>
+        <p style='font-size:18px;'>{last_accident_desc}</p>
+    </div>
+    """,
+    unsafe_allow_html=True
+)
+
+# ======================
+# 📊 STATISTIQUES GLOBALES
 # ======================
 st.subheader("📊 Statistiques globales (du 1er janvier jusqu'à hier)")
 
 total_days_without_accident = df["JoursSansAccident"].iloc[-1]
 total_accidents = df["Accident"].sum()
-days_since_last_accident = df["JoursDepuisDernierAccident"].iloc[-1]
 
-col1, col2, col3 = st.columns(3)
+col1, col2 = st.columns(2)
 
 with col1:
     st.metric(
@@ -125,13 +140,6 @@ with col2:
     st.metric(
         "Total d'accidents enregistrés",
         total_accidents
-    )
-
-with col3:
-    st.metric(
-        f"Dernier accident ({last_accident_date.strftime('%d/%m/%Y')})",
-        f"{days_since_last_accident} jours depuis",
-        delta=last_accident_desc
     )
 
 st.divider()
