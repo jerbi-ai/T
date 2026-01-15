@@ -27,8 +27,8 @@ st.subheader("🚨 Suivi des accidents")
 # ======================
 last_accident_date = datetime.date(2026, 1, 14)
 last_accident_desc = (
-    "Lors de l’opération de pesage, un élément est tombé et a heurté "
-    "le genou droit de l’opératrice, entraînant une blessure."
+    "Lors de l’opération de pesage, un élément est tombé et a heurté le genou droit de l’opératrice, entraînant une blessure."
+    
 )
 
 # ======================
