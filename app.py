@@ -23,12 +23,20 @@ st.markdown(
 st.subheader("🚨 Suivi des accidents")
 
 # ======================
-# Dernier accident connu (OFFICIEL)
+# Derniers accidents connus (OFFICIELS)
 # ======================
 last_accident_date = datetime.date(2026, 1, 14)
 last_accident_desc = (
-    "L’accident s’est produit lors d’une opération de manutention. L’agent de bord de ligne procédait au transport d’une bobine à l’aide d’un chariot. Celui-ci est devenu instable, provoquant la chute de la bobine sur le genou gauche de l’opérateur."
-    
+    "L’accident s’est produit lors d’une opération de manutention. "
+    "L’agent de bord de ligne procédait au transport d’une bobine à l’aide d’un chariot. "
+    "Celui-ci est devenu instable, provoquant la chute de la bobine sur le genou gauche de l’opérateur."
+)
+
+# Accident du 20 janvier 2026
+accident_20_date = datetime.date(2026, 1, 20)
+accident_20_desc = (
+    "Accident mineur survenu lors de l'entretien d'une machine. "
+    "L'opérateur s'est blessé légèrement à la main gauche."
 )
 
 # ======================
@@ -52,9 +60,16 @@ def create_calendar():
 df = create_calendar()
 
 # ======================
-# Déclaration de l'accident du 14 janvier 2026
+# Déclaration des accidents connus
 # ======================
-df.loc[df["Date"] == pd.Timestamp("2026-01-14"), "Accident"] = True
+df.loc[df["Date"] == pd.Timestamp(last_accident_date), "Accident"] = True
+df.loc[df["Date"] == pd.Timestamp(accident_20_date), "Accident"] = True
+
+# Dictionnaire des descriptions par date
+accident_descriptions = {
+    pd.Timestamp(last_accident_date): last_accident_desc,
+    pd.Timestamp(accident_20_date): accident_20_desc
+}
 
 # ======================
 # Limiter l'affichage jusqu'à hier
@@ -73,8 +88,12 @@ date_accident = st.sidebar.date_input(
     max_value=yesterday
 )
 
+comment_accident = st.sidebar.text_input("Commentaire de l'accident", "")
+
 if st.sidebar.button("Ajouter accident"):
     df.loc[df["Date"] == pd.Timestamp(date_accident), "Accident"] = True
+    if comment_accident.strip():
+        accident_descriptions[pd.Timestamp(date_accident)] = comment_accident
     st.sidebar.success(f"Accident ajouté pour {date_accident}")
 
 # ======================
@@ -97,23 +116,31 @@ df = calculate_lta_days(df)
 # ======================
 # Calcul : jours depuis le dernier accident
 # ======================
-days_since_last_accident = (yesterday - last_accident_date).days
+if df["Accident"].any():
+    latest_accident_date = df[df["Accident"]].Date.max()
+    days_since_latest_accident = (yesterday - latest_accident_date).days
+    latest_accident_desc = accident_descriptions.get(latest_accident_date, "Pas de description.")
+else:
+    latest_accident_date = None
+    days_since_latest_accident = len(df)
+    latest_accident_desc = "Aucun accident enregistré."
 
 # ======================
 # Affichage Dernier accident
 # ======================
-st.markdown(
-    f"""
-    <div style='text-align: center; margin-bottom: 20px;'>
-        <h3>Dernier accident ({last_accident_date.strftime('%d/%m/%Y')})</h3>
-        <h2>{days_since_last_accident} jours sans accident</h2>
-        <p style='font-size:18px; color: lightcoral; font-weight:bold;'>
-            {last_accident_desc}
-        </p>
-    </div>
-    """,
-    unsafe_allow_html=True
-)
+if latest_accident_date:
+    st.markdown(
+        f"""
+        <div style='text-align: center; margin-bottom: 20px;'>
+            <h3>Dernier accident ({latest_accident_date.strftime('%d/%m/%Y')})</h3>
+            <h2>{days_since_latest_accident} jours sans accident</h2>
+            <p style='font-size:18px; color: lightcoral; font-weight:bold;'>
+                {latest_accident_desc}
+            </p>
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
 
 # ======================
 # 📊 STATISTIQUES GLOBALES
@@ -138,7 +165,7 @@ st.markdown(
     f"""
     <div style='text-align: center; margin-top: 10px;'>
         <p style='font-size:18px; font-weight:bold;'>
-            Nombre de jours sans accident depuis le dernier accident : {days_since_last_accident}
+            Nombre de jours sans accident depuis le dernier accident : {days_since_latest_accident}
         </p>
     </div>
     """,
