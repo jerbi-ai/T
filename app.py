@@ -47,7 +47,8 @@ df = create_calendar()
 initial_accidents = [
     (datetime.date(2026, 1, 14), "L’accident s’est produit lors d’une opération de manutention. "
                                  "L’agent de bord de ligne procédait au transport d’une bobine à l’aide d’un chariot. "
-                                 "Celui-ci est devenu instable, provoquant la chute de la bobine sur le genou gauche de l’opérateur.")
+                                 "Celui-ci est devenu instable, provoquant la chute de la bobine sur le genou gauche de l’opérateur."),
+    (datetime.date(2026, 1, 20), "Nouvel accident enregistré le 20 janvier 2026.")
 ]
 
 # Ajouter les accidents initiaux dans le calendrier
