@@ -8,7 +8,6 @@ import datetime
 # ======================
 st.set_page_config(page_title="SafeYear 2026", layout="wide")
 
-# TITRE COLORÉ
 st.markdown(
     """
     <h1 style='text-align: center;'>
@@ -18,7 +17,6 @@ st.markdown(
     unsafe_allow_html=True
 )
 
-# Sous-titre
 st.subheader("🚨 Suivi des accidents")
 
 # ======================
@@ -32,57 +30,42 @@ yesterday = today - datetime.timedelta(days=1)
 # ======================
 @st.cache_data
 def create_calendar():
-    start_date = datetime.date(2026, 1, 1)
-    end_date = datetime.date(2026, 12, 31)
-    dates = pd.date_range(start=start_date, end=end_date)
+    dates = pd.date_range(
+        start=datetime.date(2026, 1, 1),
+        end=datetime.date(2026, 12, 31)
+    )
     df = pd.DataFrame(dates, columns=["Date"])
-    df["Accident"] = False
+    df["NbAccidents"] = 0
+    df["Descriptions"] = [[] for _ in range(len(df))]
     return df
 
 df = create_calendar()
 
 # ======================
-# AJOUT ACCIDENTS INITIAUX
+# ACCIDENTS INITIAUX
 # ======================
 initial_accidents = [
     (datetime.date(2026, 1, 14),
-     "L’accident s’est produit lors d’une opération de manutention. "
-     "L’agent de bord de ligne procédait au transport d’une bobine à l’aide d’un chariot. "
-     "Celui-ci est devenu instable, provoquant la chute de la bobine sur le genou gauche de l’opérateur."),
+     "Accident de manutention : chute d’une bobine sur le genou gauche de l’opérateur."),
 
-
-    
+    # 🔴 2 ACCIDENTS LE MÊME JOUR
     (datetime.date(2026, 1, 20),
-     "Il s’agit d’un accident de trajet survenu en raison d’une vitesse excessive du chauffeur "
-     "et de la présence d’un dos-d’âne non visible en raison des conditions météorologiques défavorables (pluie). "
-     "À la suite de la chute, l’opératrice a subi un traumatisme dorsal."),
+     "Accident de trajet dû à une vitesse excessive et à un dos-d’âne non visible. Traumatisme dorsal."),
+
+    (datetime.date(2026, 1, 20),
+     "Glissade lors d’une opération de nettoyage sur sol humide. Blessure au poignet."),
 
     (datetime.date(2026, 1, 22),
-     "Lors de l’opération de changement de la lame de la machine de coupe, "
-     "le technicien de maintenance s’est blessé au niveau de la main droite.")
+     "Lors du changement de la lame de la machine de coupe, le technicien s’est blessé à la main droite.")
 ]
 
-# Appliquer les accidents au calendrier
+# ======================
+# APPLICATION DES ACCIDENTS
+# ======================
 for date, desc in initial_accidents:
-    df.loc[df["Date"] == pd.Timestamp(date), "Accident"] = True
-
-# ======================
-# SIDEBAR : AJOUT MANUEL D'ACCIDENT
-# ======================
-st.sidebar.header("📌 Enregistrer un accident")
-date_accident = st.sidebar.date_input(
-    "Date de l'accident",
-    value=yesterday,
-    min_value=datetime.date(2026, 1, 1),
-    max_value=yesterday
-)
-accident_desc = st.sidebar.text_area("Description de l'accident", "")
-
-if st.sidebar.button("Ajouter accident"):
-    df.loc[df["Date"] == pd.Timestamp(date_accident), "Accident"] = True
-    if accident_desc:
-        initial_accidents.append((date_accident, accident_desc))
-    st.sidebar.success(f"Accident ajouté pour {date_accident.strftime('%d/%m/%Y')}")
+    idx = df["Date"] == pd.Timestamp(date)
+    df.loc[idx, "NbAccidents"] += 1
+    df.loc[idx, "Descriptions"].iloc[0].append(desc)
 
 # ======================
 # FILTRAGE JUSQU'À HIER
@@ -90,92 +73,74 @@ if st.sidebar.button("Ajouter accident"):
 df = df[df["Date"] <= pd.Timestamp(yesterday)]
 
 # ======================
-# CALCUL DES JOURS CONSÉCUTIFS SANS ACCIDENT
+# CALCUL DES JOURS SANS ACCIDENT
 # ======================
-def calculate_lta_days(df):
+def calculate_days_without_accident(df):
     count = 0
-    lta_list = []
-    for accident in df["Accident"]:
-        if accident:
+    result = []
+    for nb in df["NbAccidents"]:
+        if nb > 0:
             count = 0
         else:
             count += 1
-        lta_list.append(count)
-    df["JoursSansAccident"] = lta_list
+        result.append(count)
+    df["JoursSansAccident"] = result
     return df
 
-df = calculate_lta_days(df)
+df = calculate_days_without_accident(df)
 
 # ======================
-# DÉTERMINER LE DERNIER ACCIDENT
+# DERNIER ACCIDENT
 # ======================
-if df["Accident"].any():
-    last_accident_date = df[df["Accident"]]["Date"].max().date()
-    last_accident_desc = ""
-    for d, desc in reversed(initial_accidents):
-        if d == last_accident_date:
-            last_accident_desc = desc
-            break
+if (df["NbAccidents"] > 0).any():
+    last_row = df[df["NbAccidents"] > 0].iloc[-1]
+    last_accident_date = last_row["Date"].date()
+    last_descriptions = last_row["Descriptions"]
 else:
     last_accident_date = None
-    last_accident_desc = "Aucun accident enregistré."
+    last_descriptions = ["Aucun accident enregistré."]
 
-# ======================
-# CALCUL DES JOURS DEPUIS LE DERNIER ACCIDENT
-# ======================
 days_since_last_accident = (
     (yesterday - last_accident_date).days if last_accident_date else 0
 )
 
 # ======================
-# AFFICHAGE DU DERNIER ACCIDENT
+# AFFICHAGE DERNIER ACCIDENT
 # ======================
 st.markdown(
     f"""
-    <div style='text-align: center; margin-bottom: 20px;'>
+    <div style='text-align:center;'>
         <h3>Dernier accident ({last_accident_date.strftime('%d/%m/%Y') if last_accident_date else 'N/A'})</h3>
         <h2>{days_since_last_accident} jours sans accident</h2>
-        <p style='font-size:18px; color: lightcoral; font-weight:bold;'>
-            {last_accident_desc}
-        </p>
     </div>
     """,
     unsafe_allow_html=True
 )
 
-# ======================
-# STATISTIQUES GLOBALES
-# ======================
-st.subheader("📊 Statistiques globales (du 1er janvier jusqu'à hier)")
-total_days_without_accident = df["JoursSansAccident"].iloc[-1]
-total_accidents = int(df["Accident"].sum())
+for desc in last_descriptions:
+    st.markdown(
+        f"<p style='color:lightcoral; font-weight:bold;'>• {desc}</p>",
+        unsafe_allow_html=True
+    )
 
-col1, col2 = st.columns(2)
-with col1:
-    st.metric("Jours sans accident depuis le 1er janvier", total_days_without_accident)
-with col2:
-    st.metric("Total d'accidents enregistrés", total_accidents)
+st.divider()
 
-# Rappel compteur officiel
-st.markdown(
-    f"""
-    <div style='text-align: center; margin-top: 10px;'>
-        <p style='font-size:18px; font-weight:bold;'>
-            Nombre de jours sans accident depuis le dernier accident : {days_since_last_accident}
-        </p>
-    </div>
-    """,
-    unsafe_allow_html=True
-)
+# ======================
+# STATISTIQUES
+# ======================
+st.subheader("📊 Statistiques globales")
+st.metric("Total accidents", int(df["NbAccidents"].sum()))
+st.metric("Jours sans accident (actuel)", df["JoursSansAccident"].iloc[-1])
 
 st.divider()
 
 # ======================
 # CALENDRIER
 # ======================
-st.subheader("📅 Calendrier (du 1er janvier jusqu'à hier)")
+st.subheader("📅 Calendrier 2026")
 
 months = df["Date"].dt.month.unique()
+
 for month in months:
     month_df = df[df["Date"].dt.month == month]
     month_name = month_df["Date"].dt.strftime("%B %Y").iloc[0]
@@ -183,7 +148,10 @@ for month in months:
 
     display_df = pd.DataFrame({
         "Jour": month_df["Date"].dt.day,
-        "Accident": month_df["Accident"].map(lambda x: "🔴" if x else "🟢"),
+        "Accidents": month_df["NbAccidents"].apply(
+            lambda x: "🟢" if x == 0 else f"🔴 {x}"
+        ),
         "Jours consécutifs sans accident": month_df["JoursSansAccident"]
     })
+
     st.table(display_df)
