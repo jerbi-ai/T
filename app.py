@@ -50,10 +50,7 @@ initial_accidents = [
      "L’agent de bord de ligne procédait au transport d’une bobine à l’aide d’un chariot. "
      "Celui-ci est devenu instable, provoquant la chute de la bobine sur le genou gauche de l’opérateur."),
 
-    (datetime.date(2026, 1, 20),
-     "Il s’agit d’un accident de trajet survenu en raison d’une vitesse excessive du chauffeur "
-     "et de la présence d’un dos-d’âne non visible en raison des conditions météorologiques défavorables (pluie). "
-     "À la suite de la chute, l’opératrice a subi un traumatisme dorsal."),
+
     
     (datetime.date(2026, 1, 20),
      "Il s’agit d’un accident de trajet survenu en raison d’une vitesse excessive du chauffeur "
